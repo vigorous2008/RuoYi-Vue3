@@ -43,15 +43,24 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="时段" prop="startTime">
-        <el-select v-model="queryParams.operType" placeholder="请选择处理类型" clearable>
-          <el-option
-              v-for="dict in trainset_oper_type"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-          />
-        </el-select>
+      <el-form-item label="时间段" prop="startTime" label-width="60px" style="width: 100%;">
+        <el-date-picker
+            clearable
+            v-model="queryParams.startTime"
+            type="datetime"
+            value-format="YYYY-MM-DD HH:mm:ss"
+            placeholder="开始时间"
+        >
+        </el-date-picker>
+        &nbsp;&nbsp;至&nbsp;&nbsp;
+        <el-date-picker
+            clearable
+            v-model="queryParams.endTime"
+            type="datetime"
+            value-format="YYYY-MM-DD HH:mm:ss"
+            placeholder="结束时间"
+        >
+        </el-date-picker>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
@@ -205,7 +214,9 @@ const data = reactive({
     articleXml: null,
     originalText: null,
     operType: null,
-    userId: null
+    userId: null,
+    startTime:null,
+    endTime:null
   },
   rules: {
   }
@@ -253,6 +264,7 @@ const { queryParams, form, rules } = toRefs(data);
 /** 查询训练集列表 */
 function getList() {
   loading.value = true;
+  console.log(queryParams.value)
   listTrainset(queryParams.value).then(response => {
     trainsetList.value = response.rows;
     console.log(response.rows)
@@ -280,7 +292,9 @@ function reset() {
     operType: null,
     createTime: null,
     updateTime: null,
-    userId: null
+    userId: null,
+    startTime:null,
+    endTime:null
   };
   proxy.resetForm("trainsetRef");
 }
