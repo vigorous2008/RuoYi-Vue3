@@ -3,37 +3,55 @@
     <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
       <el-form-item label="期刊名称" prop="journalName">
         <el-input
-          v-model="queryParams.journalName"
-          placeholder="请输入期刊名称"
-          clearable
-          @keyup.enter="handleQuery"
+            v-model="queryParams.journalName"
+            placeholder="请输入期刊名称"
+            clearable
+            @keyup.enter="handleQuery"
         />
       </el-form-item>
       <el-form-item label="文章" prop="articleXml">
         <el-input
-          v-model="queryParams.articleXml"
-          placeholder="请输入文章"
-          clearable
-          @keyup.enter="handleQuery"
+            v-model="queryParams.articleXml"
+            placeholder="请输入文章"
+            clearable
+            @keyup.enter="handleQuery"
         />
       </el-form-item>
       <el-form-item label="处理类型" prop="operType">
         <el-select v-model="queryParams.operType" placeholder="请选择处理类型" clearable>
           <el-option
-            v-for="dict in trainset_oper_type"
-            :key="dict.value"
-            :label="dict.label"
-            :value="dict.value"
+              v-for="dict in trainset_oper_type"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
           />
         </el-select>
       </el-form-item>
       <el-form-item label="操作人" prop="userId">
-        <el-input
-          v-model="queryParams.userId"
-          placeholder="请输入操作人"
-          clearable
-          @keyup.enter="handleQuery"
-        />
+
+        <el-select
+            v-model="queryParams.userId"
+            placeholder="请选择"
+            filterable
+        >
+          <el-option
+              v-for="item in userSelectOptions"
+              :key="item.userId"
+              :label="item.userName"
+              :value="parseInt(item.userId)"
+          >
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="时段" prop="startTime">
+        <el-select v-model="queryParams.operType" placeholder="请选择处理类型" clearable>
+          <el-option
+              v-for="dict in trainset_oper_type"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
@@ -44,40 +62,40 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-          type="primary"
-          plain
-          icon="Plus"
-          @click="handleAdd"
-          v-hasPermi="['system:trainset:add']"
+            type="primary"
+            plain
+            icon="Plus"
+            @click="handleAdd"
+            v-hasPermi="['system:trainset:add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="success"
-          plain
-          icon="Edit"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['system:trainset:edit']"
+            type="success"
+            plain
+            icon="Edit"
+            :disabled="single"
+            @click="handleUpdate"
+            v-hasPermi="['system:trainset:edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="danger"
-          plain
-          icon="Delete"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['system:trainset:remove']"
+            type="danger"
+            plain
+            icon="Delete"
+            :disabled="multiple"
+            @click="handleDelete"
+            v-hasPermi="['system:trainset:remove']"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
         <el-button
-          type="warning"
-          plain
-          icon="Download"
-          @click="handleExport"
-          v-hasPermi="['system:trainset:export']"
+            type="warning"
+            plain
+            icon="Download"
+            @click="handleExport"
+            v-hasPermi="['system:trainset:export']"
         >导出</el-button>
       </el-col>
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
@@ -101,7 +119,7 @@
 
         </template>
       </el-table-column>
-      <el-table-column label="操作人" align="center" width="65" prop="userId" />
+      <el-table-column label="操作人" align="center" width="65" prop="userName" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:trainset:edit']">修改</el-button>
@@ -109,13 +127,13 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
-      v-show="total>0"
-      :total="total"
-      v-model:page="queryParams.pageNum"
-      v-model:limit="queryParams.pageSize"
-      @pagination="getList"
+        v-show="total>0"
+        :total="total"
+        v-model:page="queryParams.pageNum"
+        v-model:limit="queryParams.pageSize"
+        @pagination="getList"
     />
 
     <!-- 添加或修改训练集对话框 -->
@@ -133,7 +151,7 @@
         <el-form-item label="原文" prop="originalText">
           <el-input v-model="form.originalText" type="textarea" placeholder="请输入内容" />
         </el-form-item>
-        <el-form-item label="纠正后的文本" prop="correctText">
+        <el-form-item label="纠正" prop="correctText">
           <el-input v-model="form.correctText" type="textarea" placeholder="请输入内容" />
         </el-form-item>
         <el-form-item label="未知词" prop="unkownToken">
@@ -142,10 +160,10 @@
         <el-form-item label="处理类型" prop="operType">
           <el-select v-model="form.operType" placeholder="请选择处理类型">
             <el-option
-              v-for="dict in trainset_oper_type"
-              :key="dict.value"
-              :label="dict.label"
-              :value="parseInt(dict.value)"
+                v-for="dict in trainset_oper_type"
+                :key="dict.value"
+                :label="dict.label"
+                :value="parseInt(dict.value)"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -161,6 +179,7 @@
 </template>
 
 <script setup name="Trainset">
+import { listUser } from "@/api/system/user";
 import { listTrainset, getTrainset, delTrainset, addTrainset, updateTrainset } from "@/api/system/trainset";
 
 const { proxy } = getCurrentInstance();
@@ -175,6 +194,7 @@ const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
+const userSelectOptions = ref([]);//用户下拉列表
 
 const data = reactive({
   form: {},
@@ -235,6 +255,7 @@ function getList() {
   loading.value = true;
   listTrainset(queryParams.value).then(response => {
     trainsetList.value = response.rows;
+    console.log(response.rows)
     total.value = response.total;
     loading.value = false;
   });
@@ -340,5 +361,13 @@ function handleExport() {
   }, `trainset_${new Date().getTime()}.xlsx`)
 }
 
+/** 查询用户，用于查询条件中的操作人下拉列表 */
+function getUserNameSelect() {
+  userSelectOptions.value = [];
+  listUser({}).then(response => {
+    userSelectOptions.value = proxy.handleTree(response.data||response.rows, "userId", "userName");
+  });
+}
+getUserNameSelect();
 getList();
 </script>
