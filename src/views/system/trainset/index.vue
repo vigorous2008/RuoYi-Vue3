@@ -1,18 +1,18 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="期刊名" prop="journalName">
+      <el-form-item label="期刊名称" prop="journalName">
         <el-input
           v-model="queryParams.journalName"
-          placeholder="请输入期刊名"
+          placeholder="请输入期刊名称"
           clearable
           @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="未知词" prop="unkownToken">
+      <el-form-item label="文章" prop="articleXml">
         <el-input
-          v-model="queryParams.unkownToken"
-          placeholder="请输入未知词"
+          v-model="queryParams.articleXml"
+          placeholder="请输入文章"
           clearable
           @keyup.enter="handleQuery"
         />
@@ -85,18 +85,23 @@
 
     <el-table v-loading="loading" :data="trainsetList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="主键" align="center" prop="id" />
-      <el-table-column label="期刊名" align="center" prop="journalName" />
-      <el-table-column label="详情" align="center" width="600" prop="errorDetail" />
-      <el-table-column label="原文" align="center" prop="originalText" />
-      <el-table-column label="纠正后的文本" align="center" prop="correctText" />
+      <el-table-column label="序号" align="center" width="55" prop="id" />
+      <el-table-column label="期刊名称" align="center" prop="journalName" />
+      <el-table-column label="文章" align="center" prop="articleXml" />
+      <el-table-column label="原文" align="center" width="500" prop="originalText" />
       <el-table-column label="未知词" align="center" prop="unkownToken" />
       <el-table-column label="处理类型" align="center" prop="operType">
         <template #default="scope">
           <dict-tag :options="trainset_oper_type" :value="scope.row.operType"/>
         </template>
       </el-table-column>
-      <el-table-column label="操作人" align="center" prop="userId" />
+      <el-table-column label="最后更新时间" align="center" prop="updateTime" width="180">
+        <template #default="scope">
+          <span>{{ parseTime(scope.row.updateTime) }}</span>
+
+        </template>
+      </el-table-column>
+      <el-table-column label="操作人" align="center" width="65" prop="userId" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:trainset:edit']">修改</el-button>
@@ -115,12 +120,15 @@
 
     <!-- 添加或修改训练集对话框 -->
     <el-dialog :title="title" v-model="open" width="800px" append-to-body>
-      <el-form ref="trainsetRef" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="期刊名" prop="journalName">
-          <el-input v-model="form.journalName"  disabled placeholder="请输入期刊名" />
+      <el-form ref="trainsetRef" :model="form" :rules="rules_ext" label-width="80px">
+        <el-form-item label="期刊名称" prop="journalName">
+          <el-input v-model="form.journalName" disabled placeholder="请输入期刊名称" />
+        </el-form-item>
+        <el-form-item label="文章" prop="articleXml">
+          <el-input v-model="form.articleXml" disabled placeholder="请输入文章" />
         </el-form-item>
         <el-form-item label="详情" prop="errorDetail">
-          <el-input v-model="form.errorDetail" type="textarea" disabled :rows="6" placeholder="请输入内容" />
+          <el-input v-model="form.errorDetail" type="textarea" disabled autosize placeholder="请输入内容" />
         </el-form-item>
         <el-form-item label="原文" prop="originalText">
           <el-input v-model="form.originalText" type="textarea" placeholder="请输入内容" />
@@ -129,7 +137,7 @@
           <el-input v-model="form.correctText" type="textarea" placeholder="请输入内容" />
         </el-form-item>
         <el-form-item label="未知词" prop="unkownToken">
-          <el-input v-model="form.unkownToken" placeholder="请输入未知词" />
+          <el-input v-model="form.unkownToken" placeholder="多个未知词不用分隔" />
         </el-form-item>
         <el-form-item label="处理类型" prop="operType">
           <el-select v-model="form.operType" placeholder="请选择处理类型">
@@ -140,9 +148,6 @@
               :value="parseInt(dict.value)"
             ></el-option>
           </el-select>
-        </el-form-item>
-        <el-form-item label="操作人" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入操作人" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -177,16 +182,51 @@ const data = reactive({
     pageNum: 1,
     pageSize: 10,
     journalName: null,
-    errorDetail: null,
+    articleXml: null,
     originalText: null,
-    correctText: null,
-    unkownToken: null,
     operType: null,
     userId: null
   },
   rules: {
   }
 });
+
+
+
+// 定义校验规则
+// 可以为一个字段指定多条校验规则
+// 规则名称与form表单字段一致
+const rules_ext = reactive({
+  correctText: [
+    // 自定义校验规则
+    {
+      validator(rule, value, callback) {
+        if (value.length === form.value.originalText.length) {
+          // 校验通过
+          callback()
+        }else {
+          // 校验不通过
+          return callback(new Error('原文与纠正后的文本长度不一致！ '))
+        }
+      }
+    }
+  ],
+  originalText: [
+    // 自定义校验规则
+    {
+      validator(rule, value, callback) {
+        if (value.length === form.value.correctText.length) {
+          // 校验通过
+          callback()
+        }else {
+          // 校验不通过
+          return callback(new Error('原文与纠正后的文本长度不一致！ '))
+        }
+      }
+    }
+  ]
+})
+
 
 const { queryParams, form, rules } = toRefs(data);
 
@@ -211,6 +251,7 @@ function reset() {
   form.value = {
     id: null,
     journalName: null,
+    articleXml: null,
     errorDetail: null,
     originalText: null,
     correctText: null,
