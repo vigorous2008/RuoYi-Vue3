@@ -33,6 +33,7 @@
             v-model="queryParams.userId"
             placeholder="请选择"
             filterable
+            clearable
         >
           <el-option
               v-for="item in userSelectOptions"
@@ -146,7 +147,7 @@
     />
 
     <!-- 添加或修改训练集对话框 -->
-    <el-dialog :title="title" v-model="open" width="800px" append-to-body>
+    <el-dialog :title="title" v-model="open" width="1000px" append-to-body>
       <el-form ref="trainsetRef" :model="form" :rules="rules_ext" label-width="80px">
         <el-form-item label="期刊名称" prop="journalName">
           <el-input v-model="form.journalName" disabled placeholder="请输入期刊名称" />
@@ -189,6 +190,7 @@
 
 <script setup name="Trainset">
 import { listUser } from "@/api/system/user";
+import { allocatedUserList }  from "@/api/system/role";
 import { listTrainset, getTrainset, delTrainset, addTrainset, updateTrainset } from "@/api/system/trainset";
 
 const { proxy } = getCurrentInstance();
@@ -228,30 +230,23 @@ const data = reactive({
 // 可以为一个字段指定多条校验规则
 // 规则名称与form表单字段一致
 const rules_ext = reactive({
-  correctText: [
+  operType: [
     // 自定义校验规则
     {
       validator(rule, value, callback) {
-        if (value.length === form.value.originalText.length) {
+        //console.log("操作类型："+value)
+        if (null!=value &&(value == 1 || value == 2)) {
+          //console.log("操作类型："+value+"  需要校验字符串长度")
+          if(null != form.value.correctText && ( form.value.correctText.length == form.value.originalText.length)){
+            // 校验通过
+            callback()
+          }else{
+            // 校验不通过
+            return callback(new Error('原文与纠正后的文本长度不一致！ '))
+          }
+        }else {
           // 校验通过
           callback()
-        }else {
-          // 校验不通过
-          return callback(new Error('原文与纠正后的文本长度不一致！ '))
-        }
-      }
-    }
-  ],
-  originalText: [
-    // 自定义校验规则
-    {
-      validator(rule, value, callback) {
-        if (value.length === form.value.correctText.length) {
-          // 校验通过
-          callback()
-        }else {
-          // 校验不通过
-          return callback(new Error('原文与纠正后的文本长度不一致！ '))
         }
       }
     }
@@ -376,12 +371,22 @@ function handleExport() {
 }
 
 /** 查询用户，用于查询条件中的操作人下拉列表 */
-function getUserNameSelect() {
+function getUserNameSelect_1() {
   userSelectOptions.value = [];
   listUser({}).then(response => {
     userSelectOptions.value = proxy.handleTree(response.data||response.rows, "userId", "userName");
   });
 }
+/** 查询用户，用于查询条件中的操作人下拉列表 */
+function getUserNameSelect() {
+  userSelectOptions.value = [];
+  let queryParams = { roleId: "100"  };
+  allocatedUserList({roleId: "100"}).then(response => {
+    userSelectOptions.value = proxy.handleTree(response.data||response.rows, "userId", "userName");
+  });
+}
+
+
 getUserNameSelect();
 getList();
 </script>
