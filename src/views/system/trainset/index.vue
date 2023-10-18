@@ -156,7 +156,8 @@
           <el-input v-model="form.articleXml" disabled placeholder="请输入文章" />
         </el-form-item>
         <el-form-item label="详情" prop="errorDetail">
-          <el-input v-model="form.errorDetail" type="textarea" disabled autosize placeholder="请输入内容" />
+          <el-input v-model="form.errorDetail" type="textarea" disabled autosize placeholder="请输入内容"  onmouseover="value=value.replace(' 修正: ',' 修正：')"
+          />
         </el-form-item>
         <el-form-item label="原文" prop="originalText">
           <el-input v-model="form.originalText" type="textarea" placeholder="请输入内容" />
