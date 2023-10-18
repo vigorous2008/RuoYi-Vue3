@@ -236,6 +236,7 @@ const rules_ext = reactive({
       validator(rule, value, callback) {
         //console.log("操作类型："+value)
         if (null!=value &&(value == 1 || value == 2)) {
+          //修正基础训练集、补充垂直训练集
           //console.log("操作类型："+value+"  需要校验字符串长度")
           if(null != form.value.correctText && ( form.value.correctText.length == form.value.originalText.length)){
             // 校验通过
@@ -243,6 +244,13 @@ const rules_ext = reactive({
           }else{
             // 校验不通过
             return callback(new Error('原文与纠正后的文本长度不一致！ '))
+          }
+        }else if (null!=value && value == 5) {
+          //校验未知词
+          if(null != form.value.unkownToken && form.value.unkownToken.length > 0){
+            callback()
+          }else{
+            return callback(new Error('请填写未知词！ '))
           }
         }else {
           // 校验通过
