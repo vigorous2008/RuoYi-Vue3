@@ -396,7 +396,7 @@ function getUserNameSelect_1() {
 function getUserNameSelect() {
   userSelectOptions.value = [];
   let queryParams = { roleId: "100"  };
-  allocatedUserList({roleId: "100"}).then(response => {
+  allocatedUserList({roleId: "100",pageSize:"50"}).then(response => {
     userSelectOptions.value = proxy.handleTree(response.data||response.rows, "userId", "userName");
   });
 }
