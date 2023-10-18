@@ -123,7 +123,7 @@
           <dict-tag :options="trainset_oper_type" :value="scope.row.operType"/>
         </template>
       </el-table-column>
-      <el-table-column label="最后更新时间" align="center" prop="updateTime" width="180">
+      <el-table-column label="最后更新时间" align="center" prop="updateTime" width="180" >
         <template #default="scope">
           <span>{{ parseTime(scope.row.updateTime) }}</span>
 
@@ -234,7 +234,7 @@ const rules_ext = reactive({
     // 自定义校验规则
     {
       validator(rule, value, callback) {
-        //console.log("操作类型："+value)
+        console.log("操作类型："+value+" form.value.unkownToken="+form.value.unkownToken+" , form.value.correctText==null："+(null==form.value.correctText))
         if (null!=value &&(value == 1 || value == 2)) {
           //修正基础训练集、补充垂直训练集
           //console.log("操作类型："+value+"  需要校验字符串长度")
@@ -251,6 +251,13 @@ const rules_ext = reactive({
             callback()
           }else{
             return callback(new Error('请填写未知词！ '))
+          }
+        }else if(null!=value && (value == 0 || value == 3 || value == 4)) {
+          //校验 未处理 和 正确
+          if((null == form.value.unkownToken || form.value.unkownToken.length == 0) && (null == form.value.correctText || form.value.correctText.length == 0)){
+            callback()
+          }else{
+            return callback(new Error('请确认操作类型！ '))
           }
         }else {
           // 校验通过
