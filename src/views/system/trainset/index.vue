@@ -234,7 +234,7 @@ const rules_ext = reactive({
     // 自定义校验规则
     {
       validator(rule, value, callback) {
-        console.log("操作类型："+value+" form.value.unkownToken="+form.value.unkownToken+" , form.value.correctText==null："+(null==form.value.correctText))
+        //console.log("操作类型："+value+" form.value.unkownToken="+form.value.unkownToken+" , form.value.correctText==null："+(null==form.value.correctText))
         if (null!=value &&(value == 1 || value == 2)) {
           //修正基础训练集、补充垂直训练集
           //console.log("操作类型："+value+"  需要校验字符串长度")
@@ -274,10 +274,10 @@ const { queryParams, form, rules } = toRefs(data);
 /** 查询训练集列表 */
 function getList() {
   loading.value = true;
-  console.log(queryParams.value)
+  //console.log(queryParams.value)
   listTrainset(queryParams.value).then(response => {
     trainsetList.value = response.rows;
-    console.log(response.rows)
+    //console.log(response.rows)
     total.value = response.total;
     loading.value = false;
   });
