@@ -1,34 +1,75 @@
 <template>
   <div class="app-container home">
     <el-row :gutter="20">
-      <el-col :sm="24" :lg="24">
-        <blockquote class="text-warning" style="font-size: 14px">
-          我们在训练自己的大模型
-          <br />
-
-          <br />
-
-          <br />
-
-          <br />
-
-        </blockquote>
-
-        <hr />
+      <el-col :sm="24" :lg="6">
+        <el-statistic :value="reportData.articleNum">
+          <template #title>
+            <div style="display: inline-flex; align-items: center">
+              文章数/期刊数
+            </div>
+          </template>
+          <template #suffix>/ {{ reportData.journalNum }}</template>
+        </el-statistic>
       </el-col>
+      <el-col :sm="24" :lg="6">
+        <el-statistic :value="reportData.markedNum">
+          <template #title>
+            <div style="display: inline-flex; align-items: center">
+              已完成/总数
+              <el-tooltip
+                  effect="dark"
+                  content="检测出的错误数"
+                  placement="top"
+              >
+                <el-icon style="margin-left: 4px" :size="12">
+                  <Warning />
+                </el-icon>
+              </el-tooltip>
+            </div>
+          </template>
+          <template #suffix>/ {{ reportData.detailNum }} </template>
+        </el-statistic>
+      </el-col>
+      <el-col :sm="24" :lg="6">
+        <el-statistic title="今日处理" :value="reportData.todayMarkedNum">
+          <template #suffix>
+
+            <el-icon><Finished /></el-icon>
+          </template>
+        </el-statistic>
+      </el-col>
+      <!--
+      <el-col :sm="24" :lg="6">
+        <el-badge value="今日处理" class="item">
+          <el-button>{{ reportData.todayMarkedNum }}</el-button>
+        </el-badge>
+      </el-col>
+      -->
     </el-row>
+    <el-divider />
     <el-row :gutter="20">
       <el-col :sm="24" :lg="12" style="padding-left: 20px">
-        <h2>训练集</h2>
-        <p>
+        <el-row>
+          <el-col :span="6">
+            <h3>今日已完成（按期刊）</h3>
+          </el-col>
+          <el-col :span="6">
+            <h3>今日已完成（按人员）</h3>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="6">
+            <ul v-if="reportData.journalCountDataList">
+              <li v-for="item of reportData.journalCountDataList">{{ item.journalName }} : {{ item.detailNum }}</li>
+            </ul>
+          </el-col>
+          <el-col :span="6">
 
-        </p>
-        <p>
-
-        </p>
-        <p>
-
-        </p>
+            <ul v-if="reportData.userCountDataList">
+              <li v-for="item of reportData.userCountDataList">{{ item.userName }} : {{ item.detailNum }}</li>
+            </ul>
+          </el-col>
+        </el-row>
         <p>
 
         </p>
@@ -37,28 +78,18 @@
       <el-col :sm="24" :lg="12" style="padding-left: 50px">
         <el-row>
           <el-col :span="12">
-            <h2>技术选型</h2>
+            <h3></h3>
           </el-col>
         </el-row>
         <el-row>
+
           <el-col :span="6">
-            <h4>后端技术</h4>
+            <h4></h4>
             <ul>
-              <li>SpringBoot</li>
-              <li>JWT</li>
-              <li>MyBatis</li>
-              <li>Druid</li>
-              <li>Fastjson</li>
-              <li>...</li>
-            </ul>
-          </el-col>
-          <el-col :span="6">
-            <h4>前端技术</h4>
-            <ul>
-              <li>Vue</li>
-              <li>Vuex</li>
-              <li>Element-plus</li>
-              <li>...</li>
+              <li></li>
+              <li></li>
+              <li></li>
+              <li></li>
             </ul>
           </el-col>
         </el-row>
@@ -94,6 +125,13 @@
             </div>
           </template>
           <el-collapse accordion>
+            <el-collapse-item title="功能优化 2023-11-03">
+              <ol>
+                <li>列表页面：完善查询条件、列表显示doi并支持链接访问doi.org</li>
+                <li>首页增加统计信息</li>
+                <li>编辑页面：增加了一个“备注”输入框</li>
+              </ol>
+            </el-collapse-item>
             <el-collapse-item title="训练集编辑 2023-10-18">
               <ol>
                 <li>完善表单验证</li>
@@ -142,10 +180,19 @@
 
 <script setup name="Index">
 const version = ref('3.8.6')
+const reportData = ref([]);
+import {indexPageData, listTrainset} from "@/api/system/trainset";
 
 function goTarget(url) {
   window.open(url, '__blank')
 }
+
+function getIndexPageData(){
+  indexPageData().then(response => {
+    reportData.value = response.data;
+  });
+}
+getIndexPageData()
 </script>
 
 <style scoped lang="scss">
