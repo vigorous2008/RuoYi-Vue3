@@ -42,3 +42,12 @@ export function delTrainset(id) {
     method: 'delete'
   })
 }
+
+// 查询统计信息
+export function indexPageData(query) {
+  return request({
+    url: '/report/indexPage',
+    method: 'get',
+    params: query
+  })
+}
