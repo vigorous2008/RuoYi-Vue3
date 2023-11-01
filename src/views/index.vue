@@ -94,6 +94,13 @@
             </div>
           </template>
           <el-collapse accordion>
+            <el-collapse-item title="训练集编辑 2023-10-18">
+              <ol>
+                <li>完善表单验证</li>
+                <li>错误详情对齐（使用python更新了表中的字段）</li>
+                <li>显示完整的人员列表</li>
+              </ol>
+            </el-collapse-item>
             <el-collapse-item title="训练集编辑 2023-09-27">
               <ol>
                 <li>调整编辑页面</li>
