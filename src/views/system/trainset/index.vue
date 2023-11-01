@@ -17,6 +17,15 @@
             @keyup.enter="handleQuery"
         />
       </el-form-item>
+      <el-form-item label="doi" prop="doi">
+        <el-input
+            v-model="queryParams.doi"
+            placeholder="请输入"
+            clearable
+            @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+
       <el-form-item label="处理类型" prop="operType">
         <el-select v-model="queryParams.operType" placeholder="请选择处理类型" clearable>
           <el-option
@@ -27,6 +36,15 @@
           />
         </el-select>
       </el-form-item>
+      <el-form-item label="未知词" prop="unkownToken">
+        <el-input
+            v-model="queryParams.unkownToken"
+            placeholder="请输入未知词"
+            clearable
+            @keyup.enter="handleQuery"
+        />
+      </el-form-item>
+
       <el-form-item label="操作人" prop="userId">
 
         <el-select
@@ -44,7 +62,7 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="时间段" prop="startTime" label-width="60px" style="width: 100%;">
+      <el-form-item label="时间段" prop="startTime" label-width="60px">
         <el-date-picker
             clearable
             v-model="queryParams.startTime"
@@ -53,7 +71,12 @@
             placeholder="开始时间"
         >
         </el-date-picker>
-        &nbsp;&nbsp;至&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;
+
+
+      </el-form-item>
+      <el-form-item label="至" prop="endTime" label-width="60px">
+
         <el-date-picker
             clearable
             v-model="queryParams.endTime"
@@ -116,7 +139,13 @@
       <el-table-column label="序号" align="center" width="55" prop="id" />
       <el-table-column label="期刊名称" align="center" prop="journalName" />
       <el-table-column label="文章" align="center" prop="articleXml" />
-      <el-table-column label="原文" align="center" width="500" prop="originalText" />
+<!--      <el-table-column label="原文" align="center" width="500" prop="originalText" />-->
+      <el-table-column label="原文" align="center" width="500" prop="errorDetail"  show-overflow-tooltip="true">
+        <template #default="scope" >
+<!--          <span> errors:{{ scope.row.errorDetail.split('原文')[0].split(' errors:')[1] }}</span>-->
+          <span> errors:{{ scope.row.errorDetail.split('errors:')[1] }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="未知词" align="center" prop="unkownToken" />
       <el-table-column label="处理类型" align="center" prop="operType">
         <template #default="scope">
@@ -130,6 +159,8 @@
         </template>
       </el-table-column>
       <el-table-column label="操作人" align="center" width="65" prop="userName" />
+      <el-table-column label="doi" align="center" prop="doi" />
+      <el-table-column label="备注" align="center" prop="memo" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:trainset:edit']">修改</el-button>
@@ -155,6 +186,9 @@
         <el-form-item label="文章" prop="articleXml">
           <el-input v-model="form.articleXml" disabled placeholder="请输入文章" />
         </el-form-item>
+        <el-form-item label="doi" prop="doi">
+          <el-input v-model="form.doi" disabled placeholder="请输入文章" />
+        </el-form-item>
         <el-form-item label="详情" prop="errorDetail">
           <el-input v-model="form.errorDetail" type="textarea" disabled autosize placeholder="请输入内容"  onmouseover="value=value.replace(' 修正: ',' 修正：')"
           />
@@ -178,7 +212,12 @@
             ></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="备注" prop="memo">
+          <el-input v-model="form.memo" type="textarea" placeholder="请输入内容" />
+        </el-form-item>
       </el-form>
+
+
       <template #footer>
         <div class="dialog-footer">
           <el-button type="primary" @click="submitForm">确 定</el-button>
@@ -219,7 +258,9 @@ const data = reactive({
     operType: null,
     userId: null,
     startTime:null,
-    endTime:null
+    endTime:null,
+    doi:null,
+    memo:null
   },
   rules: {
   }
@@ -305,7 +346,9 @@ function reset() {
     updateTime: null,
     userId: null,
     startTime:null,
-    endTime:null
+    endTime:null,
+    doi:null,
+    memo:null
   };
   proxy.resetForm("trainsetRef");
 }
