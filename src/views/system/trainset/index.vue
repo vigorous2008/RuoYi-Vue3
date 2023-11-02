@@ -155,11 +155,16 @@
       <el-table-column label="最后更新时间" align="center" prop="updateTime" width="180" >
         <template #default="scope">
           <span>{{ parseTime(scope.row.updateTime) }}</span>
-
         </template>
       </el-table-column>
       <el-table-column label="操作人" align="center" width="65" prop="userName" />
-      <el-table-column label="doi" align="center" prop="doi" />
+      <el-table-column label="doi" align="center" prop="doi" >
+        <template #default="scope">
+          <el-link :href="'https://doi.org/'+scope.row.doi" :underline="true" target="_blank">
+            <span class="el-icon-document"> {{scope.row.doi}}</span>
+          </el-link>
+        </template>
+      </el-table-column>
       <el-table-column label="备注" align="center" prop="memo" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
