@@ -1,21 +1,33 @@
 <template>
   <div class="app-container home">
     <el-row :gutter="20">
-      <el-col :sm="24" :lg="6">
+      <el-col :sm="24" :lg="2">
+
+        <el-statistic :value="reportData.journalNum">
+          <template #title>
+            <div style="display: inline-flex; align-items: center">
+              期刊数
+            </div>
+          </template>
+
+        </el-statistic>
+      </el-col>
+      <el-col :sm="24" :lg="2">
         <el-statistic :value="reportData.articleNum">
           <template #title>
             <div style="display: inline-flex; align-items: center">
-              文章数/期刊数
+              文章数
             </div>
           </template>
-          <template #suffix>/ {{ reportData.journalNum }}</template>
+
         </el-statistic>
+
       </el-col>
-      <el-col :sm="24" :lg="6">
-        <el-statistic :value="reportData.markedNum">
+      <el-col :sm="24" :lg="2">
+        <el-statistic :value="reportData.detailNum">
           <template #title>
             <div style="display: inline-flex; align-items: center">
-              已完成/总数
+              总数
               <el-tooltip
                   effect="dark"
                   content="检测出的错误数"
@@ -27,10 +39,39 @@
               </el-tooltip>
             </div>
           </template>
-          <template #suffix>/ {{ reportData.detailNum }} </template>
         </el-statistic>
       </el-col>
-      <el-col :sm="24" :lg="6">
+      <el-col :sm="24" :lg="2">
+        <el-statistic :value="reportData.markedNum">
+          <template #title>
+            <div style="display: inline-flex; align-items: center">
+              已完成
+              <el-tooltip
+                  effect="dark"
+                  content="已完成标记"
+                  placement="top"
+              >
+                <el-icon style="margin-left: 4px" :size="12">
+                  <Warning />
+                </el-icon>
+              </el-tooltip>
+            </div>
+          </template>
+
+        </el-statistic>
+      </el-col>
+      <el-col :sm="24" :lg="2">
+        <el-statistic :value="reportData.finishRate">
+          <template #title>
+            <div style="display: inline-flex; align-items: center">
+              完成率
+
+            </div>
+          </template>
+
+        </el-statistic>
+      </el-col>
+      <el-col :sm="24" :lg="2">
         <el-statistic title="今日处理" :value="reportData.todayMarkedNum">
           <template #suffix>
 
@@ -59,14 +100,14 @@
         </el-row>
         <el-row>
           <el-col :span="6">
-            <ul v-if="reportData.journalCountDataList">
-              <li v-for="item of reportData.journalCountDataList">{{ item.journalName }} : {{ item.detailNum }}</li>
+            <ul v-if="reportData.journalCountDataTodayList">
+              <li v-for="item of reportData.journalCountDataTodayList">{{ item.journalName }} : {{ item.detailNum }} 条</li>
             </ul>
           </el-col>
           <el-col :span="6">
 
-            <ul v-if="reportData.userCountDataList">
-              <li v-for="item of reportData.userCountDataList">{{ item.userName }} : {{ item.detailNum }}</li>
+            <ul v-if="reportData.userCountDataTodayList">
+              <li v-for="item of reportData.userCountDataTodayList">{{ item.userName }} : {{ item.detailNum }} 条</li>
             </ul>
           </el-col>
         </el-row>
@@ -101,20 +142,21 @@
         <el-card class="update-log">
           <template v-slot:header>
             <div class="clearfix">
-              <span>联系信息</span>
+              <span>数据详情</span>
             </div>
           </template>
-          <div class="body">
+          <el-collapse accordion>
+            <el-collapse-item title="展开查看详情">
+              <el-table v-loading="loading" :data="reportData.journalCountDataList" >
+                <el-table-column label="期刊名称" align="center" prop="journalName" />
+                <el-table-column label="文章数" align="center" prop="articleNum" />
+                <el-table-column label="错误总数" align="center" prop="detailNum" />
+                <el-table-column label="已完成" align="center" prop="markedNum" />
+                <el-table-column label="完成率（%）" align="center" prop="finishRate" />
+              </el-table>
+            </el-collapse-item>
 
-
-            <p>
-              <i class="el-icon-chat-dot-round"></i> email：<a
-                href="javascript:;"
-                >wangzhongqiang@rhhz.net</a
-              >
-            </p>
-
-          </div>
+          </el-collapse>
         </el-card>
       </el-col>
       <el-col :xs="24" :sm="24" :md="12" :lg="8">
