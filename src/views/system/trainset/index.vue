@@ -444,7 +444,7 @@ function getUserNameSelect_1() {
 /** 查询用户，用于查询条件中的操作人下拉列表 */
 function getUserNameSelect() {
   userSelectOptions.value = [];
-  let queryParams = { roleId: "100"  };
+
   allocatedUserList({roleId: "100",pageSize:"50"}).then(response => {
     userSelectOptions.value = proxy.handleTree(response.data||response.rows, "userId", "userName");
   });
