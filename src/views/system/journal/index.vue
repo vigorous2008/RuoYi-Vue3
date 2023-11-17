@@ -128,7 +128,7 @@
         <el-form-item label="期刊名" prop="journalTitle">
           <el-input v-model="form.journalTitle" placeholder="请输入期刊名" />
         </el-form-item>
-        <el-form-item label="期刊英文名" prop="journalTitleEn">
+        <el-form-item label="英文名" prop="journalTitleEn">
           <el-input v-model="form.journalTitleEn" placeholder="请输入期刊英文名" />
         </el-form-item>
         <el-form-item label="发行语言" prop="journalLanguage">

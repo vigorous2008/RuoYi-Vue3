@@ -416,7 +416,7 @@ function handleExport() {
 function getJournalNameSelect() {
   journalSelectOptions.value = [];
 
-  listJournal({pageSize:"5000", orderByColumn:"order_index, journal_publisher_id"}).then(response => {
+  listJournal({pageSize:"5000",isVisible:"1", orderByColumn:"order_index, journal_publisher_id"}).then(response => {
     journalSelectOptions.value = proxy.handleTree(response.data||response.rows, "id", "journalTitle");
   });
 }

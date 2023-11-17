@@ -1,13 +1,21 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="期刊名称" prop="journalName">
-        <el-input
-            v-model="queryParams.journalName"
-            placeholder="请输入期刊名称"
+      <el-form-item label="期刊名称" prop="journalId">
+        <el-select
+            v-model="queryParams.journalId"
+            placeholder="请选择"
+            filterable
             clearable
-            @keyup.enter="handleQuery"
-        />
+        >
+          <el-option
+              v-for="item in journalSelectOptions"
+              :key="item.id"
+              :label="item.journalTitle"
+              :value="parseInt(item.id)"
+          >
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="文章" prop="articleXml">
         <el-input
@@ -237,6 +245,7 @@
 import { listUser } from "@/api/system/user";
 import { allocatedUserList }  from "@/api/system/role";
 import { listTrainset, getTrainset, delTrainset, addTrainset, updateTrainset } from "@/api/system/trainset";
+import {listJournal} from "@/api/system/journal";
 
 const { proxy } = getCurrentInstance();
 const { trainset_oper_type } = proxy.useDict('trainset_oper_type');
@@ -251,7 +260,7 @@ const multiple = ref(true);
 const total = ref(0);
 const title = ref("");
 const userSelectOptions = ref([]);//用户下拉列表
-
+const journalSelectOptions = ref([])
 const data = reactive({
   form: {},
   queryParams: {
@@ -449,8 +458,17 @@ function getUserNameSelect() {
     userSelectOptions.value = proxy.handleTree(response.data||response.rows, "userId", "userName");
   });
 }
+/** 查询期刊ID和名称，用于查询条件中的期刊下拉列表 */
+function getJournalNameSelect() {
+  journalSelectOptions.value = [];
+
+  listJournal({pageSize:"5000",isVisible:"1", orderByColumn:"order_index, journal_publisher_id"}).then(response => {
+    journalSelectOptions.value = proxy.handleTree(response.data||response.rows, "id", "journalTitle");
+  });
+}
 
 
+getJournalNameSelect();
 getUserNameSelect();
 getList();
 </script>

@@ -16,7 +16,18 @@
         <el-statistic :value="reportData.articleNum">
           <template #title>
             <div style="display: inline-flex; align-items: center">
-              文章数
+              文章总数
+            </div>
+          </template>
+
+        </el-statistic>
+
+      </el-col>
+      <el-col :sm="24" :lg="2">
+        <el-statistic :value="reportData.errorArticleNum">
+          <template #title>
+            <div style="display: inline-flex; align-items: center">
+              检测出错误的文章数
             </div>
           </template>
 
@@ -167,6 +178,12 @@
             </div>
           </template>
           <el-collapse accordion>
+            <el-collapse-item title="新功能 2023-11-17">
+              <ol>
+                <li>增加期刊信息、文章列表两个页面</li>
+                <li>训练集页面的期刊信息，由输入框改为下拉列表</li>
+              </ol>
+            </el-collapse-item>
             <el-collapse-item title="功能优化 2023-11-03">
               <ol>
                 <li>列表页面：完善查询条件、列表显示doi并支持链接访问doi.org</li>
